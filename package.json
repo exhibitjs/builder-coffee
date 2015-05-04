@@ -1,6 +1,6 @@
 {
   "name": "exhibit-coffee",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Callum Locke",
   "dependencies": {
     "babel-runtime": "^5.2.10",
