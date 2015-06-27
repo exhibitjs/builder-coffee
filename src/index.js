@@ -8,52 +8,44 @@ const literateCoffeeExt = /\.(litcoffee|coffee\.md)$/;
 
 export default function () {
 
-  return function exhibitCoffee(files) {
-    return files.map((change) => {
-      if (change.type === 'delete' || !coffeeExt.test(change.filename)) {
-        return change;
-      }
+  return function exhibitCoffee(filename, contents) {
+    const results = {};
 
-      const jsFilename = change.filename.replace(coffeeExt, '.js');
-      const source = change.contents.toString();
-      let compiled;
+    // pass on non-coffee files
+    if (!coffeeExt.test(filename)) return true;
 
-      try {
-        compiled = coffee.compile(source, {
-          sourceMap: true,
-          generatedFile: change.filename,
-          inline: true,
-          literate: literateCoffeeExt.test(change.filename),
-        });
-      }
-      catch (err) {
-        console.dir(err);
+    const jsFilename = filename.replace(coffeeExt, '.js');
+    const source = contents.toString();
+    let compiled;
 
-        this.emit('error', {
-          message: err.message,
-          filename: change.filename,
-          source: source,
-          line: err.location.first_line + 1,
-          column: err.location.first_column + 1,
-          endLine: err.location.last_line + 1,
-          endColumn: err.location.last_column + 1,
-        });
+    try {
+      compiled = coffee.compile(source, {
+        sourceMap: true,
+        generatedFile: filename,
+        inline: true,
+        literate: literateCoffeeExt.test(filename),
+      });
+    }
+    catch (err) {
+      // console.dir(err);
 
-        return {
-          filename: jsFilename,
-          contents: null,
-        };
-      }
+      throw new this.SourceError({
+        message: err.message,
+        filename: filename,
+        text: source,
+        line: err.location.first_line + 1,
+        column: err.location.first_column + 1,
+        endLine: err.location.last_line + 1,
+        endColumn: err.location.last_column + 1,
+      });
+    }
 
-      const comment = convertSourceMap
-        .fromJSON(compiled.v3SourceMap)
-        .setProperty('sources', [change.filename])
-        .toComment();
+    const comment = convertSourceMap
+      .fromJSON(compiled.v3SourceMap)
+      .setProperty('sources', [filename])
+      .toComment();
 
-      return {
-        filename: jsFilename,
-        contents: compiled.js + '\n' + comment,
-      };
-    });
+    results[jsFilename] = compiled.js + '\n' + comment;
+    return results;
   };
 }
