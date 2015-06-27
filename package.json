@@ -1,6 +1,6 @@
 {
   "name": "exhibit-coffee",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Callum Locke",
   "dependencies": {
     "coffee-script": "^1.9.2",
