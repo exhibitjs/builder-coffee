@@ -1,25 +1,21 @@
 'use strict';
 
-import coffee from 'coffee-script';
-import convertSourceMap from 'convert-source-map';
+import coffeeScript from 'coffee-script';
 
 const coffeeExt = /\.(coffee|litcoffee|coffee\.md)$/;
 const literateCoffeeExt = /\.(litcoffee|coffee\.md)$/;
 
 export default function () {
-
   return function exhibitCoffee(filename, contents) {
-    const results = {};
-
-    // pass on non-coffee files
-    if (!coffeeExt.test(filename)) return true;
+    // pass non-coffee files straight through
+    if (!coffeeExt.test(filename)) return contents;
 
     const jsFilename = filename.replace(coffeeExt, '.js');
     const source = contents.toString();
     let compiled;
 
     try {
-      compiled = coffee.compile(source, {
+      compiled = coffeeScript.compile(source, {
         sourceMap: true,
         generatedFile: filename,
         inline: true,
@@ -27,11 +23,9 @@ export default function () {
       });
     }
     catch (err) {
-      // console.dir(err);
-
       throw new this.SourceError({
+        filename,
         message: err.message,
-        filename: filename,
         text: source,
         line: err.location.first_line + 1,
         column: err.location.first_column + 1,
@@ -40,12 +34,13 @@ export default function () {
       });
     }
 
-    const comment = convertSourceMap
+    const comment = this.util.convertSourceMap
       .fromJSON(compiled.v3SourceMap)
       .setProperty('sources', [filename])
       .toComment();
 
-    results[jsFilename] = compiled.js + '\n' + comment;
-    return results;
+    return {
+      [jsFilename]: compiled.js + '\n' + comment,
+    };
   };
 }
