@@ -30,7 +30,6 @@
   "scripts": {
     "build": "babel src --out-dir dist",
     "buildwatch": "babel src --out-dir dist --watch",
-    "clean": "rimraf dist",
     "prepublish": "npm run build"
   }
 }
