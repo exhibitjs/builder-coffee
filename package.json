@@ -3,9 +3,6 @@
   "description": "Exhibit builder for compiling CoffeeScript files into JavaScript",
   "version": "0.1.0",
   "author": "Callum Locke",
-  "bugs": {
-    "url": "https://github.com/exhibitjs/exhibit-builder-coffee/issues"
-  },
   "dependencies": {
     "coffee-script": "^1.10.0"
   },
@@ -13,23 +10,20 @@
     "babel": "^5.8.23",
     "babel-eslint": "^4.1.3",
     "eslint": "^1.6.0",
-    "eslint-config-exhibit": "^1.0.0",
-    "eslint-plugin-babel": "^2.1.1"
+    "eslint-config-exhibit": "^2.0.0",
+    "eslint-plugin-babel": "^2.1.1",
+    "rimraf": "^2.4.3"
   },
   "files": [
     "dist",
     "src"
   ],
-  "homepage": "https://github.com/exhibitjs/exhibit-builder-coffee",
   "license": "MIT",
   "main": "dist/index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/exhibitjs/exhibit-builder-coffee.git"
-  },
+  "repository": "exhibitjs/builder-coffee",
   "scripts": {
-    "build": "babel src --out-dir dist",
-    "buildwatch": "babel src --out-dir dist --watch",
+    "build": "rimraf dist && babel src --out-dir dist",
+    "buildwatch": "rimraf dist && babel src --out-dir dist --watch",
     "prepublish": "npm run build"
   }
 }

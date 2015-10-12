@@ -1,30 +1,30 @@
-'use strict';
-
 import coffeeScript from 'coffee-script';
 
 const coffeeExt = /\.(coffee|litcoffee|coffee\.md)$/;
 const literateCoffeeExt = /\.(litcoffee|coffee\.md)$/;
 
 export default function () {
-  return function exhibitCoffee(filename, contents) {
-    // pass non-coffee files straight through
-    if (!coffeeExt.test(filename)) return contents;
+  return function exhibitCoffee(job) {
+    const {path, contents, util: {SourceError, convertSourceMap}} = job;
 
-    const jsFilename = filename.replace(coffeeExt, '.js');
+    // pass non-coffee files straight through
+    if (!coffeeExt.test(path)) return contents;
+
+    const jsFilename = path.replace(coffeeExt, '.js');
     const source = contents.toString();
     let compiled;
 
     try {
       compiled = coffeeScript.compile(source, {
         sourceMap: true,
-        generatedFile: filename,
+        generatedFile: path,
         inline: true,
-        literate: literateCoffeeExt.test(filename),
+        literate: literateCoffeeExt.test(path),
       });
     }
     catch (err) {
-      throw new this.SourceError({
-        filename,
+      throw new SourceError({
+        filename: path,
         message: err.message,
         text: source,
         line: err.location.first_line + 1,
@@ -34,9 +34,9 @@ export default function () {
       });
     }
 
-    const comment = this.util.convertSourceMap
+    const comment = convertSourceMap
       .fromJSON(compiled.v3SourceMap)
-      .setProperty('sources', [filename])
+      .setProperty('sources', [path])
       .toComment();
 
     return {
