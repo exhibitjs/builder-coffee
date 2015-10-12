@@ -1,7 +1,7 @@
 {
   "name": "exhibit-builder-coffee",
   "description": "Exhibit builder for compiling CoffeeScript files into JavaScript",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Callum Locke",
   "dependencies": {
     "coffee-script": "^1.10.0"
